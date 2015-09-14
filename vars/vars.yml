@@ -1,0 +1,6 @@
+---
+mediawikidir: '/var/www/mediawiki123/'
+sqluser: 'mediawiki'
+sqlpass: 'secretpass'
+apacheuser: 'apache'
+apachegroup: 'apache'

@@ -1,0 +1,41 @@
+---
+- name: 'Configure MediaWiki on CentOS 7 LAMP'
+  user: root
+  hosts: mediawiki 
+  vars_files:
+     - 'vars/vars.yml'
+
+  tasks:
+
+    - name: 'Update all packages'
+      yum: name=* state=latest
+
+    - name: 'Install php-xml'
+      yum: name=php-xml state=latest
+
+    - name: 'Install php-intl'
+      yum: name=php-intl state=latest
+
+    - name: 'Install php-gd'
+      yum: name=php-gd state=latest
+
+    - name: 'Install texlive'
+      yum: name=texlive state=latest
+
+    - name: 'Install epel-release for php-xcache'
+      yum: name=epel-release state=latest
+
+    - name: 'Install php-xcache'
+      yum: name=php-xcache state=latest
+
+    - name: 'Install MediaWiki'
+      yum: name=mediawiki123 state=latest
+
+    - name: 'Restart Apache'
+      service: name=httpd state=restarted
+
+    - name: 'Create MediaWiki SQL user'
+      mysql_user: name={{ sqluser }} password={{ sqlpass }} priv=*.*:ALL state=present
+
+    - name: 'Create MediaWiki SQL db'
+      mysql_db: name=mediawiki state=present
