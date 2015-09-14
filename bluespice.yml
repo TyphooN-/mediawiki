@@ -1,5 +1,5 @@
 ---
-- name: 'Install BlueSpice for MediaWiki.'
+- name: 'Install BlueSpice for MediaWiki'
   user: root
   hosts: mediawiki 
   vars_files:
@@ -10,7 +10,7 @@
     - name: 'Download BlueSpice-free'
       get_url: url=http://sourceforge.net/projects/BlueSpice/files/latest/download?source=files dest=/tmp/bluespice-free.zip force=no
 
-    - name: 'Install unzip.'
+    - name: 'Install unzip'
       yum: name=unzip state=latest
  
     - name: 'Unzip BlueSpice-free'
@@ -48,10 +48,10 @@
       command: mv '{{ mediawikidir }}'/extensions/BlueSpiceFoundation/config.template '{{ mediawikidir }}'/extensions/BlueSpiceFoundation/config
       when: config.stat.exists
 
-    - name: 'Install php-mbstring.'
+    - name: 'Install php-mbstring'
       yum: name=php-mbstring state=latest
 
-    - name: 'Install php-tidy.'
+    - name: 'Install php-tidy'
       yum: name=php-tidy state=latest
 
     - name: 'Change max_execution_time in php.ini'
@@ -66,6 +66,21 @@
     - name: 'Change upload_tmp_dir in php.ini to /tmp'
       lineinfile: dest=/etc/php.ini regexp='^;upload_tmp_dir =' line='upload_tmp_dir = /tmp' state=present
 
-    - name: 'Restart Apache. Please visit your http://yourmediawiki/installcheck.php to ensure nothing still needs fixing.'
+    - name: 'Add line to LocalSettings.php'
+      lineinfile: dest='{{ mediawikidir }}'/LocalSettings.php regexp='^require_once("$IP/extensions/BlueSpiceDistribution/BlueSpiceDistribution.php");' line='require_once("$IP/extensions/BlueSpiceDistribution/BlueSpiceDistribution.php");' state=present
+
+    - name: 'Add line to LocalSettings.php'
+      lineinfile: dest='{{ mediawikidir }}'/LocalSettings.php regexp='^require_once("$IP/extensions/BlueSpiceFoundation/BlueSpiceFoundation.php");' line='require_once("$IP/extensions/BlueSpiceFoundation/BlueSpiceFoundation.php");' state=present
+
+    - name: 'Add line to LocalSettings.php'
+      lineinfile: dest='{{ mediawikidir }}'/LocalSettings.php regexp='^require_once("$IP/extensions/BlueSpiceExtensions/BlueSpiceExtensions.php");' line='require_once("$IP/extensions/BlueSpiceExtensions/BlueSpiceExtensions.php");' state=present
+
+    - name: 'Add line to LocalSettings.php'
+      lineinfile: dest='{{ mediawikidir }}'/LocalSettings.php regexp='^require_once("$IP/skins/BlueSpiceSkin/BlueSpiceSkin.php");' line='require_once("$IP/skins/BlueSpiceSkin/BlueSpiceSkin.php");' state=present
+
+    - name: 'Update PHP'
+      command:  php '{{ mediawikidir }}'/maintenance/update.php --conf '{{ mediawikidir }}'/LocalSettings.php
+
+    - name: 'Restart Apache. Please visit your http://yourmediawiki/installcheck.php to ensure nothing still needs fixing'
       service: name=httpd state=restarted
 
